@@ -34,12 +34,13 @@ Template.dragger_mode_element.events({
     var that = this, isStyle = $(e.target).hasClass('style'),
       isName = $(e.target).hasClass('name'), 
       elementPath = getElementPath(Session.get('element'))
-      setTimeout(function() {
+    setTimeout(function() {
       if(isStyle) {
         if(isName) delete elementPath.element.style[that.name]
         elementPath.element.style[isName ? $(e.target).text() : that.name] = 
           isName ? that.value : $(e.target).text()
-      }
+      } else elementPath.element[isName ? $(e.target).text() : $(e.target).attr('for')] = 
+        isName ? that[$(e.target).attr('for')] : $(e.target).text()
       Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
     })
   },

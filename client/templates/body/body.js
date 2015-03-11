@@ -30,7 +30,7 @@ Template.body.rendered = function() {
 	  'ctrl+a': function(){ if(Session.get('visible')) Meteor.call('add') },
     //Clear all elements
 	  'ctrl+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
-      Meteor.call('clear')},
+      Meteor.call('clear'); Session.set('element','')},
     //Delete element
 	  'delete': function(){ if(Session.get('visible') && confirm('Sure?')) 
       Meteor.call('remove', Session.get('element')); Session.set('element', '') }

@@ -10,14 +10,14 @@ Meteor.methods({
     var style, htmlID, jsID
     //Generate random style
     style = {
-      top: Math.randomInt(50,100) + 'px',
-      left: Math.randomInt(50,100) + 'px',
-      width: Math.randomInt(100,200) + 'px',
-      height: Math.randomInt(100,200) + 'px',
       'background-color': Math.randomColor(), 
-      color: Math.randomColor(true), 
       border: '10px solid ' + Math.randomColor(),
-      position: 'absolute'
+      color: Math.randomColor(true), 
+      height: Math.randomInt(100,200) + 'px',
+      left: Math.randomInt(50,100) + 'px',
+      position: 'absolute',
+      top: Math.randomInt(50,100) + 'px',
+      width: Math.randomInt(100,200) + 'px'
     }
     //Setup callback that will start a new sharejs document for each template being created
     var cb = function(err, tmplid, strInitText) {

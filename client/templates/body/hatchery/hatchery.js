@@ -23,7 +23,8 @@ Template.hatchery.helpers({
     //Render the javascript next
     if(!objTmpls.javascript || !objTmpls.javascript.rendered) return
     //Get the rendered source code from Blaze
-    var src = Blaze.toHTMLWithData(eval(objTmpls.javascript.rendered), {_id: objTmpls.html._id})
+    var src
+    try { src = Blaze.toHTMLWithData(eval(objTmpls.javascript.rendered), {_id: objTmpls.html._id}) } catch(e) {}
     //Evaluate the code
     try{eval( src )}catch(e) {
       console.log('Error in code:', src)

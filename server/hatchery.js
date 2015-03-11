@@ -96,10 +96,12 @@ Hatchery = (function() {
   }
 
   function updateMongoElement(elementPath, strPath, obj) {
-    var options = strPath ? {$set : {}} : obj
-    //Setup the options object for the update call
-    strPath = (elementPath.path ? elementPath.path + '.' + elementPath.index + '.' : '') + strPath
-    if(strPath) options['$set'][strPath] = obj
+    var options = obj
+    if(strPath || elementPath.path) {
+      options = {$set : {}}
+      if(strPath) options['$set'][(elementPath.path ? elementPath.path + '.' + elementPath.index + '.' : '') + strPath] = obj
+      else options['$set'][elementPath.path + '.' + elementPath.index] = obj
+    }
     //Update element if parents are equal
     Elements.update({_id: elementPath.root}, options, function(err){})
   }

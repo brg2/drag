@@ -167,7 +167,6 @@ Dragger = (function() {
   function update(e) {
     if(!element) return
     clear()
-    element.css({position: 'absolute'})
     diff = {x: e.pageX - pos.x, y: e.pageY - pos.y}
     if(rsize) {
       element.css({ top: opos.y, left: opos.x, height: opos.h + diff.y, width: opos.w + diff.x })
