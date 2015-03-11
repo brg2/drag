@@ -20,10 +20,10 @@ To "reparent" an element drag it over another and release. Now when you drag the
 Click on the "element" header and it will switch to the "source" view where you can use the ShareJS live editor to collaborate on templating the element you selected. All the actions for dragging the elements around the screen will percolate to other users. Chat in the area at the bottom of the window and send messages by clicking the "send" button. If you have any questions or problems, add an issue for this project. Thanks!
 
 Future stuff:
-1. Improvement of chat system
-2. Cleaner look and feel
-3. Bug fixes
-4. Optimizations
-5. Speed and usability improvements
-6. Code size reduction
-7. etc
+- Improvement of chat system
+- Cleaner look and feel
+- Bug fixes
+- Optimizations
+- Speed and usability improvements
+- Code size reduction
+- etc
