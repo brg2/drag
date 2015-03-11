@@ -1,0 +1,8 @@
+<template name='dragger_mode_element'>
+{{#each arrayify this.style}}
+	<div class="style name" contenteditable>{{name}}</div>
+	<div class="style value" contenteditable>{{value}}</div>
+{{/each}}
+<div class="header">content</div>
+<div class="content value" contenteditable>{{content}}</div>
+</template>

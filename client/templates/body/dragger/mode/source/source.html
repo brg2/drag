@@ -1,0 +1,8 @@
+<template name='dragger_mode_source'>
+{{#each templates}}
+	{{#with getTemplate}}
+	<div class="name" id="name_{{_id}}" contenteditable>{{name}}</div>
+	{{> sharejsAce docid=_id id=aceid onRender=config}}
+	{{/with}}
+{{/each}}
+</template>

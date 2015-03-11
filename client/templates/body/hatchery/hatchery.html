@@ -1,0 +1,25 @@
+<template name="hatchery">
+	{{#if children}}
+		{{#each children}}
+			{{#if templates}}
+
+				{{#each templates}}
+					{{> UI.dynamic template=_id}}
+				{{/each}}
+
+			{{else}}
+			<div id='{{_id}}' style="{{getStyle}}">
+
+				{{content}}
+
+				{{> hatchery}}
+				
+			</div>
+			{{/if}}
+		{{/each}}
+	{{else}}
+		{{#unless _id}}
+			{{> hatchery children=elements}}
+		{{/unless}}
+	{{/if}}
+</template>
