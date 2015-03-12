@@ -67,7 +67,7 @@ Template.dragger_mode_element.events({
 
 Template.dragger_mode_element_style.events({
   'mousedown div.button.delete': function(e) {
-    if(!confirm('Sure?')) return
+    if(!e.shiftKey && !confirm('Sure?')) return
     var elementPath = getElementPath(Session.get('element'))
     delete elementPath.element.style[this.name]
     Meteor.call('updateElement', Session.get('element'), 'style', elementPath.element.style)

@@ -23,16 +23,17 @@ Template.body.rendered = function() {
 	Meteor.Keybindings.add({
     //Toggle editor left or right
 	  'ctrl+shift+e': function(){ if(Session.get('visible')) Session.set('position', 
-      Session.get('position') == 'right' ? 'left' : 'right') },
+      Session.get('position') == 'right' ? 'left' : 'right') }
     //Open or close editor
-	  'ctrl+e': function(){ Session.set('visible', !Session.get('visible')) },
+	  ,'ctrl+e': function(){ Session.set('visible', !Session.get('visible')) }
     //Add new element
-	  'ctrl+a': function(){ if(Session.get('visible')) Meteor.call('add') },
+	  ,'ctrl+a': function(){ if(Session.get('visible')) Meteor.call('add') }
     //Clear all elements
-	  'ctrl+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
-      Meteor.call('clear'); Session.set('element','')},
+	  ,'ctrl+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
+      Meteor.call('clear'); Session.set('element','')}
     //Delete element
-	  'delete': function(){ if(Session.get('visible') && confirm('Sure?')) 
-      Meteor.call('remove', Session.get('element')); Session.set('element', '') }
+	  ,'option+delete': function(){ 
+      if(Session.get('visible') && $(document.activeElement).attr('contenteditable') === undefined && confirm('Sure?'))
+        Meteor.call('remove', Session.get('element')); Session.set('element', '')}
 	})
 }
