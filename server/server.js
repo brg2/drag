@@ -34,14 +34,14 @@ Meteor.methods({
     }
     //Generate a new HTML template
     Templates.insert({_id: htmlID = Fake.word() + Templates._makeNewID(), name: 'html'}, function(err, tmplid){cb(err, tmplid, 
-      "{{#with element}}\n<div "+ AH_ID +"='{{_id}}'>\n\t<!-- Insert HTML code here -->\n\t{{content}}\n\t<!-- Load children -->\n\t{{> hatchery}}\n</div>\n<style>\n\t/* CSS code here */\n\t["+ AH_ID +"={{_id}}] {\n\t\t{{getStyle}}\n\t}\n</style>\n{{/with}}\n"
+      "{{#with element}}\n<div "+ AH_ID +"='{{_id}}'>\n\t<!-- Insert HTML code here -->\n\t" + Fake.word() + "\n\t<!-- Load children -->\n\t{{> hatchery}}\n</div>\n<style>\n\t/* CSS code here */\n\t["+ AH_ID +"={{_id}}] {\n\t\t{{getStyle}}\n\t}\n</style>\n{{/with}}\n"
       )})
     //Generate a new Javascript template
     Templates.insert({_id: jsID = Fake.word() + Templates._makeNewID(), name: 'javascript'}, function(err, tmplid){cb(err, tmplid, 
-      "Template['{{_id}}'].helpers({\n\t// helper code here\n\tcontent: function(){\n\t\treturn this.content\n\t}\n})\n\nTemplate['{{_id}}'].events({\n\t// and event code here\n})\n"
+      "Template['{{_id}}'].helpers({\n\t// helper code here\n})\n\nTemplate['{{_id}}'].events({\n\t// and event code here\n})\n"
       )})
     //Create new element and link the template 
-    Elements.insert({_id: Fake.word() + Elements._makeNewID(), style: style, content: Fake.word(), templates: [htmlID, jsID]})
+    Elements.insert({_id: Fake.word() + Elements._makeNewID(), style: style, templates: [htmlID, jsID]})
   },
   //Clear tree
   clear: function() {

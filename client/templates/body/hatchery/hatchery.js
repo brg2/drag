@@ -42,7 +42,10 @@ function updateMongoElement(element, lastParentId, newParentId) {
   //Get the DB style
   ds = getElementPath(Session.get('element')).element.style
   //Update the style
-  ds = _.extend(ds, style)
+  if(ds.top) ds.top = style.top
+  if(ds.left) ds.left = style.left
+  if(ds.width) ds.width = style.width
+  if(ds.height) ds.height = style.height
   //Get the element id to update
   elementId = element.attr(AH_ID)
   //Update element
