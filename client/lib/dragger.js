@@ -127,7 +127,9 @@ Dragger = (function() {
     pos = {x:e.pageX, y:e.pageY}
     if(e.shiftKey) rsize = true
     gebp(e.pageX, e.pageY, function(el) {
-      if(['body','html'].indexOf((element = el)[0].tagName.toLowerCase()) != -1) {element = false; return }
+      element = el
+      try{while( !element.attr(AH_ID) && element[0].tagName.toLowerCase() != 'body') element = element.parent()}catch(e){element = false; return}
+      if(element[0].tagName.toLowerCase() == 'body') {element = false; return }
       var isParentBody = false
       if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1) isParentBody = true
       var leftbm = parseFloat(element.parent().css('borderLeft')) + parseFloat(element.parent().css('marginLeft')) + parseFloat(element.css('marginLeft')) + parseFloat($(document.body).css('marginLeft'))
@@ -137,7 +139,7 @@ Dragger = (function() {
         h: element.height(), 
         w: element.width()}
       update(e)
-      Session.set('element', element.attr(AH_ID))
+      Session.set('element', element.attr(AH_ID) || element.parent().attr(AH_ID))
     });
   }
   //Called after the user releases the mouse button from dragging an element.

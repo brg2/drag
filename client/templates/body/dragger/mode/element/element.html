@@ -1,6 +1,12 @@
 <template name='dragger_mode_element'>
 {{#each arrayify this.style}}
-	<div class="style name" contenteditable>{{name}}</div>
-	<div class="style value" contenteditable>{{value}}</div>
+	{{> dragger_mode_element_style}}
 {{/each}}
+<div class="add button"><i class="fa fa-plus-circle"></i></div>
+</template>
+
+<template name='dragger_mode_element_style'>
+	<div class="style name" contenteditable for="{{name}}">{{name}}</div>
+	<div class="style value" contenteditable>{{value}}</div>
+	<div class="delete button"><i class="fa fa-minus-circle"></i></div>
 </template>
