@@ -32,7 +32,7 @@ Template.body.rendered = function() {
 	  ,'ctrl+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
       Meteor.call('clear'); Session.set('element','')}
     //Delete element
-	  ,'option+delete': function(){ 
+	  ,'shift+delete': function(){ 
       if(Session.get('visible') && $(document.activeElement).attr('contenteditable') === undefined && confirm('Sure?'))
         Meteor.call('remove', Session.get('element')); Session.set('element', '')}
 	})

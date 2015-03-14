@@ -65,7 +65,7 @@ Dragger = (function() {
   }   
 
   /* Private Variables */
-  var element, pos, opos, diff, rsize, cleared, stopCallbacks = [], lastParentId, newParentId, newchild
+  var element, dbel, pos, opos, diff, rsize, cleared, stopCallbacks = [], lastParentId, newParentId, newchild
 
   /* Private Functions */
   //Attach the currently dragged element to a new parent element.
@@ -79,16 +79,22 @@ Dragger = (function() {
     var isParentBody = false
     if(['body','html'].indexOf(newparent[0].tagName.toLowerCase()) != -1) isParentBody = true
     newchild = element.clone()
-    newchild.css({ 
-      left: element.offset().left - (isParentBody ? 0 : (newparent.offset().left + parseFloat(newparent.css('borderLeft')) + parseFloat(newparent.css('marginLeft')) + parseFloat(element.css('marginLeft')))), 
-      top: element.offset().top - (isParentBody ? 0 : (newparent.offset().top + parseFloat(newparent.css('borderTop')) + parseFloat(newparent.css('marginTop')) + parseFloat(element.css('marginTop'))))
+    newchild.css({
+      left: dbel.style.left = (element.offset().left - (isParentBody ? 0 : (newparent.offset().left +
+        parseFloat(newparent.css('borderLeft')) +
+        parseFloat(newparent.css('marginLeft')) +
+        parseFloat(element.css('marginLeft')))) + 'px'),
+      top: dbel.style.top = (element.offset().top - (isParentBody ? 0 : (newparent.offset().top +
+        parseFloat(newparent.css('borderTop')) +
+        parseFloat(newparent.css('marginTop')) +
+        parseFloat(element.css('marginTop')))) + 'px')
     })
     
   }
   //Called after the user releases the mouse button from dragging an element.
-  function callStopCallbacks(element, lastParentId, newParentId) {
+  function callStopCallbacks(dbelement, lastParentId, newParentId) {
     for(var i in stopCallbacks) {
-      setTimeout(stopCallbacks[i](element, lastParentId, newParentId));
+      setTimeout(stopCallbacks[i](dbelement, lastParentId, newParentId));
     }
   }
   //Clears any text selections that might have occurred while clicking on an element to drag.
@@ -102,7 +108,8 @@ Dragger = (function() {
   // gebp - Get Element By Position.
   function gebp(x, y, callback) {
     $('#overlay').hide()
-    if((found = $(document.elementFromPoint(x - $(document).scrollLeft(), y - $(document).scrollTop()))).length) callback(found)
+    if((found = $(document.elementFromPoint(x - $(document).scrollLeft(),
+      y - $(document).scrollTop()))).length) callback(found)
     else setTimeout(callback)
     $('#overlay').show()
   }
@@ -128,15 +135,24 @@ Dragger = (function() {
     if(e.shiftKey) rsize = true
     gebp(e.pageX, e.pageY, function(el) {
       element = el
-      try{while( !element.attr(AH_ID) && element[0].tagName.toLowerCase() != 'body') element = element.parent()}catch(e){element = false; return}
+      try{while( !element.attr(AH_ID) && element[0].tagName.toLowerCase() != 'body')
+        element = element.parent()}catch(e){element = false; return}
       if(element[0].tagName.toLowerCase() == 'body') {element = false; return }
+      dbel = getElementPath(element.attr(AH_ID)).element
       var isParentBody = false
-      if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1) isParentBody = true
-      var leftbm = parseFloat(element.parent().css('borderLeft')) + parseFloat(element.parent().css('marginLeft')) + parseFloat(element.css('marginLeft')) + parseFloat($(document.body).css('marginLeft'))
-      var topbm = parseFloat(element.parent().css('borderTop')) + parseFloat(element.parent().css('marginTop')) + parseFloat(element.css('marginTop')) + parseFloat($(document.body).css('marginTop'))
-      opos = {x:(isParentBody ? element.offset().left : parseFloat(element.css('left'))),// - (isParentBody ? 0 : element.parent().offset().left),// - leftbm)), 
-        y: (isParentBody ? element.offset().top : parseFloat(element.css('top'))),// - (isParentBody ? 0 : (element.parent().offset().top)),// - topbm)), 
-        h: element.height(), 
+      if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1)
+        isParentBody = true
+      var leftbm = parseFloat(element.parent().css('borderLeft')) +
+        parseFloat(element.parent().css('marginLeft')) +
+        parseFloat(element.css('marginLeft')) +
+        parseFloat($(document.body).css('marginLeft'))
+      var topbm = parseFloat(element.parent().css('borderTop')) +
+        parseFloat(element.parent().css('marginTop')) +
+        parseFloat(element.css('marginTop')) +
+        parseFloat($(document.body).css('marginTop'))
+      opos = {x:(isParentBody ? element.offset().left : (parseFloat(element.css('left')) || 0)),
+        y: (isParentBody ? element.offset().top : (parseFloat(element.css('top')) || 0)),
+        h: element.height(),
         w: element.width()}
       update(e)
       Session.set('element', element.attr(AH_ID) || element.parent().attr(AH_ID))
@@ -146,7 +162,7 @@ Dragger = (function() {
   function stop(e) {
     if(!element) return
     if(rsize) {
-      callStopCallbacks(element, lastParentId, newParentId)
+      callStopCallbacks(dbel, lastParentId, newParentId)
       init()
       return
     }
@@ -160,7 +176,7 @@ Dragger = (function() {
         attachTo(el)
       }
       //Call the stop callbacks
-      callStopCallbacks((newchild ? newchild : element), lastParentId, newParentId)
+      callStopCallbacks(dbel, lastParentId, newParentId)
       //Reinitialize
       init()
     })
@@ -170,10 +186,22 @@ Dragger = (function() {
     if(!element) return
     clear()
     diff = {x: e.pageX - pos.x, y: e.pageY - pos.y}
+    var check = function(what) { return dbel.style.hasOwnProperty(what) &&
+      dbel.style[what].indexOf('%') < 0 &&
+      dbel.style[what].indexOf('important') < 0 &&
+      dbel.style[what].indexOf('auto') < 0 }
+
     if(rsize) {
-      element.css({ top: opos.y, left: opos.x, height: opos.h + diff.y, width: opos.w + diff.x })
+      if (check('width'))
+        element.css('width', dbel.style.width = ((opos.w + diff.x) || 0) + 'px')
+      if (check('height'))
+        element.css('height', dbel.style.height = ((opos.h + diff.y) || 0) + 'px')
     } else {
-      element.css({ top: opos.y + diff.y, left: opos.x + diff.x, height: opos.h, width: opos.w })
+      if (check('left'))
+      if (check('left'))
+        element.css('left', dbel.style.left = ((opos.x + diff.x) || 0) + 'px')
+      if (check('top'))
+        element.css('top', dbel.style.top = ((opos.y + diff.y) || 0) + 'px')
     }
   }
   /* End Private Functions */

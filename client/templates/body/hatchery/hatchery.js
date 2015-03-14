@@ -34,22 +34,9 @@ Template.hatchery.helpers({
   }
 })
 
-function updateMongoElement(element, lastParentId, newParentId) {
-  //Variables
-  var style, elementId, dbstyle
-  //Get the element style
-  style = {top: element.css('top'), left: element.css('left'), width: element.css('width'), height: element.css('height') }
-  //Get the DB style
-  ds = getElementPath(Session.get('element')).element.style
-  //Update the style
-  if(ds.top) ds.top = style.top
-  if(ds.left) ds.left = style.left
-  if(ds.width) ds.width = style.width
-  if(ds.height) ds.height = style.height
-  //Get the element id to update
-  elementId = element.attr(AH_ID)
+function updateMongoElement(dbelement, lastParentId, newParentId) {
   //Update element
-  Meteor.call('updateElement', elementId, 'style', ds, lastParentId, newParentId, function(err) {
+  Meteor.call('updateElement', dbelement._id, 'style', dbelement.style, lastParentId, newParentId, function(err) {
     if(err) console.log(err)
   })
 }

@@ -27,6 +27,7 @@ Template.dragger_mode_element.events({
       // Enter - 13: Clear/blur from the field
       case 13:
         $(e.target)[0].blur()
+        return false
     }
   },
   //After blurring from content field, update the property in mongo
@@ -36,6 +37,7 @@ Template.dragger_mode_element.events({
       elementPath = getElementPath(Session.get('element')),
       //Grab the value
       theValue = $(e.target).text()
+      if(this[isName ? 'name' : 'value'] == theValue) return
       //Delete it from the element so Meteor doesn't repeat the text
       $(e.target).text("")
     setTimeout(function() {
@@ -53,14 +55,6 @@ Template.dragger_mode_element.events({
     elementPath.element.style['undefined'] = ' '
     Meteor.call('updateElement', Session.get('element'), 'style', elementPath.element.style)
   }
-  //Double click to add or double click with shift key to delete
-  // 'dblclick div.name': function(e) {
-  //   var elementPath = getElementPath(Session.get('element'))
-  //   if(e.shiftKey) elementPath.element.style[Fake.word()] = Fake.word()
-  //   else if(confirm('Sure?')) delete elementPath.element.style[this.name]
-  //   else return
-  //   Meteor.call('updateElement', Session.get('element'), 'style', elementPath.element.style)
-  // }
 })
 
 
@@ -71,6 +65,7 @@ Template.dragger_mode_element_style.events({
     var elementPath = getElementPath(Session.get('element'))
     delete elementPath.element.style[this.name]
     Meteor.call('updateElement', Session.get('element'), 'style', elementPath.element.style)
+    if(e.shiftKey) Dragger.clear()
   }
 })
 
