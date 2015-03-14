@@ -50,7 +50,6 @@ Template.dragger_mode_element.events({
         isName ? that[$(e.target).attr('for')] : theValue
       Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
     })
-    Dragger.clear()
   },
   'mousedown div.button.add': function(e) {
     var elementPath = getElementPath(Session.get('element'))
