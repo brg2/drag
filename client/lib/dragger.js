@@ -81,13 +81,13 @@ Dragger = (function() {
     newchild = element.clone()
     newchild.css({
       left: dbel.style.left = (element.offset().left - (isParentBody ? 0 : (newparent.offset().left +
-        parseFloat(newparent.css('borderLeft')) +
-        parseFloat(newparent.css('marginLeft')) +
-        parseFloat(element.css('marginLeft')))) + 'px'),
+        parseFloat(newparent.css('borderLeft').match(/\d+/)[0]) +
+        parseFloat(newparent.css('marginLeft').match(/\d+/)[0]) +
+        parseFloat(element.css('marginLeft').match(/\d+/)[0]))) + 'px'),
       top: dbel.style.top = (element.offset().top - (isParentBody ? 0 : (newparent.offset().top +
-        parseFloat(newparent.css('borderTop')) +
-        parseFloat(newparent.css('marginTop')) +
-        parseFloat(element.css('marginTop')))) + 'px')
+        parseFloat(newparent.css('borderTop').match(/\d+/)[0]) +
+        parseFloat(newparent.css('marginTop').match(/\d+/)[0]) +
+        parseFloat(element.css('marginTop').match(/\d+/)[0]))) + 'px')
     })
     
   }
@@ -142,16 +142,16 @@ Dragger = (function() {
       var isParentBody = false
       if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1)
         isParentBody = true
-      var leftbm = parseFloat(element.parent().css('borderLeft')) +
-        parseFloat(element.parent().css('marginLeft')) +
-        parseFloat(element.css('marginLeft')) +
-        parseFloat($(document.body).css('marginLeft'))
-      var topbm = parseFloat(element.parent().css('borderTop')) +
-        parseFloat(element.parent().css('marginTop')) +
-        parseFloat(element.css('marginTop')) +
-        parseFloat($(document.body).css('marginTop'))
-      opos = {x:(isParentBody ? element.offset().left : (parseFloat(element.css('left')) || 0)),
-        y: (isParentBody ? element.offset().top : (parseFloat(element.css('top')) || 0)),
+      var leftbm = parseFloat(element.parent().css('borderLeft').match(/\d+/)[0]) +
+        parseFloat(element.parent().css('marginLeft').match(/\d+/)[0]) +
+        parseFloat(element.css('marginLeft').match(/\d+/)[0]) +
+        parseFloat($(document.body).css('marginLeft').match(/\d+/)[0])
+      var topbm = parseFloat(element.parent().css('borderTop').match(/\d+/)[0]) +
+        parseFloat(element.parent().css('marginTop').match(/\d+/)[0]) +
+        parseFloat(element.css('marginTop').match(/\d+/)[0]) +
+        parseFloat($(document.body).css('marginTop').match(/\d+/)[0])
+      opos = {x:(isParentBody ? element.offset().left : (parseFloat(element.css('left').match(/\d+/)[0]) || 0)),
+        y: (isParentBody ? element.offset().top : (parseFloat(element.css('top').match(/\d+/)[0]) || 0)),
         h: element.height(),
         w: element.width()}
       update(e)
@@ -171,7 +171,7 @@ Dragger = (function() {
     gebp(e.pageX, e.pageY, function(el) {
       element.css('visibility', curviz)
       //If found an element and not resizing and the two elements don't have the same id
-      if(el && !rsize && el.attr(AH_ID) != element.attr(AH_ID)) {
+      if(e.altKey && el && !rsize && el.attr(AH_ID) != element.attr(AH_ID)) {
         //Reparent this element to el
         attachTo(el)
       }

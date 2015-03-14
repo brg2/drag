@@ -1,13 +1,15 @@
 <template name='dragger'>
-	<div id='overlay'>
-	</div>
+	<div id='apphatch'>
+		<div id='overlay'>
+		</div>
 
-	<div id="editor" class="{{position}}">
-	{{#with element}}
-		<div class="header mode">{{mode}}</div>
-		{{> UI.dynamic template=modeTemplate}}
-	{{/with}}
-	</div>
+		<div id="editor" class="{{position}}">
+		{{#with element}}
+			<div class="header mode">{{mode}}</div>
+			{{> UI.dynamic template=modeTemplate}}
+		{{/with}}
+		</div>
 
-	{{> chapp_form}}
+		{{> chapp_form}}
+	</div>
 </template>
