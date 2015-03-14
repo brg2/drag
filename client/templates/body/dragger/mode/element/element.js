@@ -25,8 +25,9 @@ Template.dragger_mode_element.events({
       case 38: case 40:
         return false
       // Enter - 13: Clear/blur from the field
-      case 13:
+      case 13: case 27:
         $(e.target)[0].blur()
+        Dragger.clear()
         return false
     }
   },
@@ -49,6 +50,7 @@ Template.dragger_mode_element.events({
         isName ? that[$(e.target).attr('for')] : theValue
       Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
     })
+    Dragger.clear()
   },
   'mousedown div.button.add': function(e) {
     var elementPath = getElementPath(Session.get('element'))
