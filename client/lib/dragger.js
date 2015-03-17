@@ -81,13 +81,13 @@ Dragger = (function() {
     newchild = element.clone()
     newchild.css({
       left: dbel.style.left = (element.offset().left - (isParentBody ? 0 : (newparent.offset().left +
-        parseFloat(newparent.css('borderLeft').match(/\d+/)[0]) +
-        parseFloat(newparent.css('marginLeft').match(/\d+/)[0]) +
-        parseFloat(element.css('marginLeft').match(/\d+/)[0]))) + 'px'),
+        getNumber(newparent.css('borderLeft')) +
+        getNumber(newparent.css('marginLeft')) +
+        getNumber(element.css('marginLeft')))) + 'px'),
       top: dbel.style.top = (element.offset().top - (isParentBody ? 0 : (newparent.offset().top +
-        parseFloat(newparent.css('borderTop').match(/\d+/)[0]) +
-        parseFloat(newparent.css('marginTop').match(/\d+/)[0]) +
-        parseFloat(element.css('marginTop').match(/\d+/)[0]))) + 'px')
+        getNumber(newparent.css('borderTop')) +
+        getNumber(newparent.css('marginTop')) +
+        getNumber(element.css('marginTop')))) + 'px')
     })
     
   }
@@ -106,11 +106,11 @@ Dragger = (function() {
     if(!options.skipBlur) setTimeout(function(){try{document.activeElement.blur()}catch(e){}})
   }
   // gebp - Get Element By Position.
-  function gebp(x, y, callback) {
+  function gebp(event, callback) {
     $('#overlay').hide()
-    if((found = $(document.elementFromPoint(x - $(document).scrollLeft(),
-      y - $(document).scrollTop()))).length) callback(found)
-    else setTimeout(callback)
+    if((found = $(document.elementFromPoint(event.pageX - $(document).scrollLeft(),
+      event.pageY - $(document).scrollTop()))).length) callback(event, found)
+    else setTimeout(function(){callback(event, false)})
     $('#overlay').show()
   }
   //Split a style segment into object
@@ -128,12 +128,15 @@ Dragger = (function() {
   function init() {
     element = pos = opos = diff = rsize = cleared = lastParentId = newParentId = newchild = false
   }
+  function getNumber(strValue) {
+    try{return parseFloat(strValue.match(/\d+/)[0])}catch(e){return 0}
+  }
   //Called when the user begins to drag an element.
   function start(e) {
     clear({skipBlur: true})
     pos = {x:e.pageX, y:e.pageY}
     if(e.shiftKey) rsize = true
-    gebp(e.pageX, e.pageY, function(el) {
+    gebp(e, function(e, el) {
       element = el
       try{while( !element.attr(AH_ID) && element[0].tagName.toLowerCase() != 'body')
         element = element.parent()}catch(e){element = false; return}
@@ -142,16 +145,16 @@ Dragger = (function() {
       var isParentBody = false
       if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1)
         isParentBody = true
-      var leftbm = parseFloat(element.parent().css('borderLeft').match(/\d+/)[0]) +
-        parseFloat(element.parent().css('marginLeft').match(/\d+/)[0]) +
-        parseFloat(element.css('marginLeft').match(/\d+/)[0]) +
-        parseFloat($(document.body).css('marginLeft').match(/\d+/)[0])
-      var topbm = parseFloat(element.parent().css('borderTop').match(/\d+/)[0]) +
-        parseFloat(element.parent().css('marginTop').match(/\d+/)[0]) +
-        parseFloat(element.css('marginTop').match(/\d+/)[0]) +
-        parseFloat($(document.body).css('marginTop').match(/\d+/)[0])
-      opos = {x:(isParentBody ? element.offset().left : (parseFloat(element.css('left').match(/\d+/)[0]) || 0)),
-        y: (isParentBody ? element.offset().top : (parseFloat(element.css('top').match(/\d+/)[0]) || 0)),
+      var leftbm = getNumber(element.parent().css('borderLeft')) +
+        getNumber(element.parent().css('marginLeft')) +
+        getNumber(element.css('marginLeft')) +
+        getNumber($(document.body).css('marginLeft'))
+      var topbm = getNumber(element.parent().css('borderTop')) +
+        getNumber(element.parent().css('marginTop')) +
+        getNumber(element.css('marginTop')) +
+        getNumber($(document.body).css('marginTop'))
+      opos = {x:(isParentBody ? element.offset().left : (getNumber(element.css('left')) || 0)),
+        y: (isParentBody ? element.offset().top : (getNumber(element.css('top')) || 0)),
         h: element.height(),
         w: element.width()}
       update(e)
@@ -168,7 +171,7 @@ Dragger = (function() {
     }
     var curviz = element.css('visibility')
     element.css('visibility', 'hidden')
-    gebp(e.pageX, e.pageY, function(el) {
+    gebp(e, function(e, el) {
       element.css('visibility', curviz)
       //If found an element and not resizing and the two elements don't have the same id
       if(e.altKey && el && !rsize && el.attr(AH_ID) != element.attr(AH_ID)) {
@@ -197,7 +200,6 @@ Dragger = (function() {
       if (check('height'))
         element.css('height', dbel.style.height = ((opos.h + diff.y) || 0) + 'px')
     } else {
-      if (check('left'))
       if (check('left'))
         element.css('left', dbel.style.left = ((opos.x + diff.x) || 0) + 'px')
       if (check('top'))
