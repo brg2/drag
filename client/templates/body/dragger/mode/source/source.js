@@ -7,6 +7,7 @@ Template.dragger_mode_source.helpers({
 	    	editor.setTheme('ace/theme/monokai')
     		editor.getSession().setMode('ace/mode/' + templateName)
     		editor.getSession().setUseWrapMode(true)
+    		editor.getSession().setUseWorker(false)
 		} catch(e) {} }
 	},
 	//Return a template object for the ace editor and other things

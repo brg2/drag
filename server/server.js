@@ -24,7 +24,7 @@ Meteor.methods({
       if(tmplid) ShareJS.model.create(tmplid, 'text', undefined, Meteor.bindEnvironment(function(err) {
         //Initialize the document with some template code
         ShareJS.model.applyOp(tmplid, {
-          op: [{i:strInitText, p:0}], //Initiaze at position 0
+          op: [{i:strInitText, p:0}], //Insert at position 0
           v: 0, // of version 0
           meta: null // with no meta
         })

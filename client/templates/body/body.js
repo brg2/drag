@@ -25,9 +25,9 @@ Template.body.rendered = function() {
 	  'alt+shift+e': function(){ if(Session.get('visible')) Session.set('position', 
       Session.get('position') == 'right' ? 'left' : 'right'); return false }
     //Open or close editor
-	  ,'alt+e': function(){ Session.set('visible', !Session.get('visible')); return false }
+	  ,'ctrl+e': function(){ Session.set('visible', !Session.get('visible')); return false }
     //Add new element
-	  ,'alt+n': function(){ if(Session.get('visible'))  {Meteor.call('add'); return false} }
+	  ,'alt+a': function(){ if(Session.get('visible'))  {Meteor.call('add'); return false} }
     //Clear all elements
 	  ,'alt+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
       Meteor.call('clear'); Session.set('element',''); return false}
