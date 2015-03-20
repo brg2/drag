@@ -1,6 +1,7 @@
 Meteor.methods({
   //Add a new element
   add: function() {
+    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     //Variables
     var style, htmlID, jsID
     //Generate random style
@@ -54,6 +55,7 @@ Meteor.methods({
   },
   //Clear tree
   clear: function() {
+    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     //Remove all the elements
     Elements.remove({})
     //Cycle through the templates
@@ -70,16 +72,19 @@ Meteor.methods({
   },
   //Remove the element
   remove: function(elementId) {
+    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     var elementPath = getElementPath(elementId)
     if(elementPath.element.templates) Templates.remove({_id: {$in: elementPath.element.templates}})
     Elements.remove({_id:elementId})
   },
   //Update element
   updateElement: function() {
+    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     Hatchery.updateElement.apply(Hatchery, arguments)
   },
   //Update the name of the template
   updateTemplateName: function(templateId, strNewTemplateName) {
+    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     Templates.update({ _id: templateId }, { $set: { name: strNewTemplateName }})
   }
 })
