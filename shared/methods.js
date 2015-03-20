@@ -1,8 +1,3 @@
-fs = Npm.require('fs')
-__ROOT_APP_PATH__ = fs.realpathSync(process.env.PWD)
-try{Math.randomInt = function(min, max) {return Math.floor(Math.random() * (max - min)) + min}}catch(e){}
-try{Math.randomColor = function(isOpaque){return 'rgba(' + Math.randomInt(0,255) + ', ' + Math.randomInt(0,255) + ', ' + Math.randomInt(0,255) + ', ' + (isOpaque ? 1 : Math.random()) + ')'}}catch(e){}
-
 Meteor.methods({
   //Add a new element
   add: function() {
@@ -42,6 +37,20 @@ Meteor.methods({
       )})
     //Create new element and link the template 
     Elements.insert({_id: Fake.word() + Elements._makeNewID(), style: style, templates: [htmlID, jsID]})
+  },
+  allowUserTo: function(strUsername, arrRoles) {
+    if(! Meteor.isServer) return false
+    if (Roles.userIsInRole(Meteor.user(), ['admin','manage-users'])) {
+      Roles.addUsersToRoles(Meteor.users.findOne({username: strUsername})._id, arrRoles)
+    } else
+      throw new Meteor.Error(403, "Not authorized to manage users");
+  },
+  banUserFrom: function(strUsername, arrRoles) {
+    if(! Meteor.isServer) return false
+    if (Roles.userIsInRole(Meteor.user(), ['admin','manage-users'])) {
+      Roles.removeUsersFromRoles(Meteor.users.findOne({username: strUsername})._id, arrRoles)
+    } else
+      throw new Meteor.Error(403, "Not authorized to manage users");
   },
   //Clear tree
   clear: function() {
@@ -94,11 +103,3 @@ addTemplateListener = function(templateId) {
     delete _templateListeners[templateId]
   })
 }
-//When meteor is done loading...
-Meteor.startup(function() {
-  // cycle through all the templates
-  _.each(Templates.find().fetch(), function(template) {
-    // and setup listeners to update the Templates collection
-    addTemplateListener(template._id)
-  })
-})

@@ -1,7 +1,7 @@
 editor-width = 35%
 editor-min = 270px
 editor-max = 500px
-editor-margin = 10px
+editor-margin = 20px
 
 transition()
 	-webkit-transition arguments
@@ -61,7 +61,10 @@ transition()
 	cursor text
 
 
-#editor div.mode:hover, #editor [contenteditable]:hover, #editor [contenteditable]:focus 
+#editor div.mode:hover
+#editor [contenteditable]:hover
+#editor [contenteditable]:focus 
+a.login-link-text:hover
 	color #000
 
 
@@ -73,6 +76,7 @@ transition()
 #editor > div.header
 #editor > div.name
 #editor > div.button
+a.login-link-text
 	text-shadow 1px 1px rgba(255,255,255,1)
 	transition color 100ms ease-in-out
 
@@ -88,20 +92,21 @@ transition()
 	max-width editor-max
 	
 
-#editor div.name, #editor div.header
+a.login-link-text
+#editor div.name
+#editor div.header
 	font-family Syncopate, arial, helvetica, sans-serif
 	font-size 16px 
 	margin-top 20px
-
-#editor div.header
-	color #555
 
 #editor div.name
 	color #777
 
 #editor div.header
+a.login-link-text
 	font-weight 700
 	cursor pointer
+	color #555
 
 #editor .ace_editor
 	margin 0px
@@ -110,3 +115,16 @@ transition()
 	min-width editor-min
 	max-width editor-max
 	height 300px
+
+#login-buttons
+	position fixed
+	top 20px
+
+div.left #login-buttons
+	right editor-margin
+
+div.right #login-buttons
+	left editor-margin
+
+a.login-link-text
+	text-decoration none !important

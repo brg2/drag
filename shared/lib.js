@@ -34,3 +34,7 @@ getTemplatePath = function(elementId, templateId) {
   if(!found) return false
   return {template: found, index: index, path: el}
 }
+
+//Some math methods
+try{Math.randomInt = function(min, max) {return Math.floor(Math.random() * (max - min)) + min}}catch(e){}
+try{Math.randomColor = function(isOpaque){return 'rgba(' + Math.randomInt(0,255) + ', ' + Math.randomInt(0,255) + ', ' + Math.randomInt(0,255) + ', ' + (isOpaque ? 1 : Math.random()) + ')'}}catch(e){}

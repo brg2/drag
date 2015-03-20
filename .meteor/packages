@@ -16,3 +16,10 @@ afruth:chapp
 fortawesome:fontawesome
 iron:router
 templating
+accounts-password
+service-configuration
+http
+email
+meteorhacks:ssr
+accounts-ui
+alanning:roles

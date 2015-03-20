@@ -3,6 +3,7 @@
 		<div id='overlay'>
 		</div>
 
+		{{#if isInRole 'admin,edit-app'}}
 		<div id="editor" class="{{position}}">
 		{{#with element}}
 			<div class="header mode">{{mode}}</div>
@@ -11,5 +12,10 @@
 		</div>
 
 		{{> chapp_form}}
+		{{/if}}
+		
+		<div class="{{position}}">
+		{{> loginButtons}}
+		</div>
 	</div>
 </template>
