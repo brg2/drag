@@ -1,6 +1,36 @@
-compileTemplate = function(strHTML) {
-  try{ return SpacebarsCompiler.compile(strHTML, { isTemplate:true })} catch (e) {}
+//Array of templates with listeners
+_templateListeners = {}
+//Add a listener to a template so it updates the compiled code in Templates if there is a change
+addTemplateListener = function(template) {
+  var templateId = template._id
+  //If the template already has a listener, then return
+  if(_templateListeners[templateId]) return
+  //Otherwise set it and continue
+  else _templateListeners[templateId] = true
+  //Call the ShareJS add listener method
+  ShareJS.model.listen(templateId, undefined, Meteor.bindEnvironment(function() {
+    //When the document changes, get the current source code 
+    ShareJS.model.getSnapshot(templateId, function(err, obj) {
+      // and compile it to the Templates collection
+      Templates.update({ _id: templateId }, { $set: { rendered:
+          // Compile using Meteor's Spacebars parser
+          compileTemplate(obj.snapshot)
+      }})
+    })
+  }), function(err) {
+    //If there was a problem (like the document doesn't exist) then remove it from the template listeners array
+    delete _templateListeners[templateId]
+  })
+}
+
+compileTemplate = function(strTemplate) {
+  try{ return SpacebarsCompiler.compile(strTemplate, { isTemplate:true })} catch (e) {}
   return false
+}
+
+var AH_cssColorsRegex = /aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|#[\da-zA-Z]+|rgba?\(.*?\)|hsla?\(.*?\)|hsva?\(.*?\)/gi
+getColorsFromString = function(strValue) {
+  return strValue.match(AH_cssColorsRegex)
 }
 
 getElementPath = function(elementId, tree, rootId, strPath) {

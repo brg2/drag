@@ -1,3 +1,8 @@
+<head>
+	<script src='spectrum.js'></script>
+	<link rel='stylesheet' href='spectrum.css' />
+</head>
+
 <template name='dragger_mode_element'>
 {{#each arrayify this.style}}
 	{{> dragger_mode_element_style}}
@@ -7,6 +12,6 @@
 
 <template name='dragger_mode_element_style'>
 	<div class="style name" contenteditable for="{{name}}">{{name}}</div>
-	<div class="style value" contenteditable>{{value}}</div>
+	<div class="style value" contenteditable spellcheck="false">{{{value}}}</div>
 	<div class="delete button"><i class="fa fa-minus-circle"></i></div>
 </template>

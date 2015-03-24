@@ -34,7 +34,7 @@ Template.hatchery.helpers({
   }
 })
 
-function updateMongoElement(dbelement, lastParentId, newParentId) {
+updateMongoElement = function(dbelement, lastParentId, newParentId) {
   //Update element
   Meteor.call('updateElement', dbelement._id, 'style', dbelement.style, lastParentId, newParentId, function(err) {
     if(err) console.log(err)

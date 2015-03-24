@@ -3,7 +3,7 @@ Meteor.startup(function() {
   // cycle through all the templates
   _.each(Templates.find().fetch(), function(template) {
     // and setup listeners to update the Templates collection
-    addTemplateListener(template._id)
+    addTemplateListener(template)
   })
 
   if (Meteor.users.find().fetch().length === 0) {

@@ -37,7 +37,7 @@ Template.dragger_mode_element.events({
       isName = $(e.target).hasClass('name'), 
       elementPath = getElementPath(Session.get('element')),
       //Grab the value
-      theValue = $(e.target).text()
+      theValue = $(e.target).html().replace(/(<([^>]+)>)/ig,"")
       if(this[isName ? 'name' : 'value'] == theValue) return
       //Delete it from the element so Meteor doesn't repeat the text
       $(e.target).text("")
@@ -48,7 +48,10 @@ Template.dragger_mode_element.events({
           isName ? that.value : theValue
       } else elementPath.element[isName ? theValue : $(e.target).attr('for')] = 
         isName ? that[$(e.target).attr('for')] : theValue
-      Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
+      Meteor.call('updateElement', Session.get('element'), '', elementPath.element, function() {
+        //Hack to bring back the correct value (Meteor has difficulty with contenteditable divs)
+        $(e.target).text(theValue)
+      })
     })
   },
   'mousedown div.button.add': function(e) {
@@ -60,6 +63,17 @@ Template.dragger_mode_element.events({
 
 
 
+Template.dragger_mode_element_style.helpers({
+  value: function() {
+    var colorVal = this.value, curColors = getColorsFromString(colorVal);
+    if(!curColors) return colorVal
+    _.each(curColors, function(color) {
+      colorVal = colorVal.replace(color, '<a href="#">'+color+'</a>')
+    })
+    return colorVal
+  }
+})
+
 Template.dragger_mode_element_style.events({
   'mousedown div.button.delete': function(e) {
     if(!e.shiftKey && !confirm('Sure?')) return
@@ -67,6 +81,41 @@ Template.dragger_mode_element_style.events({
     delete elementPath.element.style[this.name]
     Meteor.call('updateElement', Session.get('element'), 'style', elementPath.element.style)
     if(e.shiftKey) Dragger.clear()
+  },
+  'mousedown div.value a': function(e) {
+    var that = this
+    $(e.target).spectrum({  
+      showAlpha: true,            // Show alpha controls
+      showButtons: true,          // Show OK and Cancel buttons
+      clickoutFiresChange: true,  // Allow affirmative clickouts
+      chooseText: 'OK',           // Set OK button text
+      color: $(e.target).text(),  // Set the initial color
+      showInput: true,            // Show text input
+      preferredFormat: "rgb",
+      change: function(color) {
+        //Set the link text to the new color value
+        this.innerText = color.toRgbString()
+        //Get the mongo element
+        var elementPath = getElementPath(Session.get('element'))
+        //Set the style property with the new value
+        elementPath.element.style[that.name] = $(this).parent().text()
+        //Update the element on the server
+        Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
+      },
+      hide: function(color) {
+        $('[_id=' + Session.get('element') + ']').css(that.name, $(this).parent().text())
+      },
+      move: function(color) {
+        //Generate the new full string css value
+        var moveValue = that.value.replace(this.innerText, color.toRgbString())
+        //Update the browser side element (Reduces server side calls)
+        $('[_id=' + Session.get('element') + ']').css(that.name, moveValue)
+      },
+      show: function() {
+        Dragger.clear()
+      }
+    })
+    return false
   }
 })
 
