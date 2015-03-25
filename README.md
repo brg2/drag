@@ -6,10 +6,10 @@ A demo is available at [edit.meteor.com](http://edit.meteor.com/)
 To open the editor, press Ctrl + E
 
 Here is a list of possible commands:
-- Ctrl + C: Clears all elements (Caution!)
-- Ctrl + A: Adds a new element
+- Alt + C: Clears all elements (Caution!)
+- Alt + A: Adds a new element
 - Ctrl + Shift + E: Toggles editor left or right
-- Del: Deletes current element
+- Shift + Del: Deletes current element
 
 To drag, simply click on an element and drag with your mouse to where you want the element to show. 
 
