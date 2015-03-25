@@ -50,7 +50,7 @@ Template.dragger_mode_element.events({
         isName ? that[$(e.target).attr('for')] : theValue
       Meteor.call('updateElement', Session.get('element'), '', elementPath.element, function() {
         //Hack to bring back the correct value (Meteor has difficulty with contenteditable divs)
-        $(e.target).text(theValue)
+        $(e.target).html(getColorLinkString(theValue))
       })
     })
   },
@@ -65,12 +65,7 @@ Template.dragger_mode_element.events({
 
 Template.dragger_mode_element_style.helpers({
   value: function() {
-    var colorVal = this.value, curColors = getColorsFromString(colorVal);
-    if(!curColors) return colorVal
-    _.each(curColors, function(color) {
-      colorVal = colorVal.replace(color, '<a href="#">'+color+'</a>')
-    })
-    return colorVal
+    return getColorLinkString(this.value)
   }
 })
 
@@ -93,14 +88,21 @@ Template.dragger_mode_element_style.events({
       showInput: true,            // Show text input
       preferredFormat: "rgb",
       change: function(color) {
-        //Set the link text to the new color value
+        //Set the link text to the new 'color', color value
         this.innerText = color.toRgbString()
         //Get the mongo element
-        var elementPath = getElementPath(Session.get('element'))
+        var elementPath = getElementPath(Session.get('element')),
+          newValue = $(this).parent().text(),
+          caller = this
+        if(!newValue) return
         //Set the style property with the new value
-        elementPath.element.style[that.name] = $(this).parent().text()
+        elementPath.element.style[that.name] = newValue
+        //Clear the value (because hack)
+        $(caller).parent().html('')
         //Update the element on the server
-        Meteor.call('updateElement', Session.get('element'), '', elementPath.element)
+        Meteor.call('updateElement', Session.get('element'), '', elementPath.element, function() {
+          $(caller).parent().html(getColorLinkString(newValue))
+        })
       },
       hide: function(color) {
         $('[_id=' + Session.get('element') + ']').css(that.name, $(this).parent().text())
@@ -115,7 +117,6 @@ Template.dragger_mode_element_style.events({
         Dragger.clear()
       }
     })
-    return false
   }
 })
 

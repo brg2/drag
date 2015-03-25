@@ -22,7 +22,7 @@ Template.body.helpers({
 Template.body.rendered = function() {
 	Meteor.Keybindings.add({
     //Toggle editor left or right
-	  'alt+shift+e': function(){ if(Session.get('visible')) Session.set('position', 
+	  'ctrl+shift+e': function(){ if(Session.get('visible')) Session.set('position', 
       Session.get('position') == 'right' ? 'left' : 'right'); return false }
     //Open or close editor
 	  ,'ctrl+e': function(){ Session.set('visible', !Session.get('visible')); return false }

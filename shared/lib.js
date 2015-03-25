@@ -33,6 +33,15 @@ getColorsFromString = function(strValue) {
   return strValue.match(AH_cssColorsRegex)
 }
 
+getColorLinkString = function(strValue) {
+  var colorVal = strValue, curColors = getColorsFromString(colorVal);
+  if(!curColors) return colorVal
+  _.each(curColors, function(color) {
+    colorVal = colorVal.replace(color, '<a href="#">'+color+'</a>')
+  })
+  return colorVal
+}
+
 getElementPath = function(elementId, tree, rootId, strPath) {
   if(tree === undefined) tree = Elements.find().fetch()
   var found = false
