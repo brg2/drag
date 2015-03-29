@@ -53,19 +53,17 @@ Dragger = (function() {
 
     stop: function(e) {
       stop(e)
-      Session.set('dragging', '')
       return
     },
 
     update: function(e) {
       update(e)
-      if(element) Session.set('dragging', 'dragging')
       return
     }
   }   
 
   /* Private Variables */
-  var element, dbel, pos, opos, diff, rsize, cleared, stopCallbacks = [], lastParentId, newParentId, newchild
+  var updel, element, dbel, pos, opos, dragging, diff, rsize, cleared, stopCallbacks = [], lastParentId, newParentId, newchild
 
   /* Private Functions */
   //Attach the currently dragged element to a new parent element.
@@ -80,11 +78,11 @@ Dragger = (function() {
     if(['body','html'].indexOf(newparent[0].tagName.toLowerCase()) != -1) isParentBody = true
     newchild = element.clone()
     newchild.css({
-      left: dbel.style.left = (element.offset().left - (isParentBody ? 0 : (newparent.offset().left +
+      left: updel.left = (element.offset().left - (isParentBody ? 0 : (newparent.offset().left +
         getNumber(newparent.css('borderLeft')) +
         getNumber(newparent.css('marginLeft')) +
         getNumber(element.css('marginLeft')))) + 'px'),
-      top: dbel.style.top = (element.offset().top - (isParentBody ? 0 : (newparent.offset().top +
+      top: updel.top = (element.offset().top - (isParentBody ? 0 : (newparent.offset().top +
         getNumber(newparent.css('borderTop')) +
         getNumber(newparent.css('marginTop')) +
         getNumber(element.css('marginTop')))) + 'px')
@@ -94,7 +92,7 @@ Dragger = (function() {
   //Called after the user releases the mouse button from dragging an element.
   function callStopCallbacks(dbelement, lastParentId, newParentId) {
     for(var i in stopCallbacks) {
-      setTimeout(stopCallbacks[i](dbelement, lastParentId, newParentId));
+      setTimeout(stopCallbacks[i]({_id: dbelement._id, style: updel}, lastParentId, newParentId));
     }
   }
   //Clears any text selections that might have occurred while clicking on an element to drag.
@@ -126,15 +124,17 @@ Dragger = (function() {
   }
   //Reset the variables to initial values.
   function init() {
-    element = pos = opos = diff = rsize = cleared = lastParentId = newParentId = newchild = false
+    Session.set('dragging', false)
+    updel = element = dragging = pos = opos = diff = rsize = cleared = lastParentId = newParentId = newchild = false
   }
+  //Extract a number from a string
   function getNumber(strValue) {
-    try{return parseFloat(strValue.match(/\d+/)[0])}catch(e){return 0}
+    try{return parseFloat(strValue.match(/[\-\d.]+/)[0])}catch(e){return 0}
   }
   //Called when the user begins to drag an element.
   function start(e) {
     if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
-    clear({skipBlur: true})
+    clear()
     pos = {x:e.pageX, y:e.pageY}
     if(e.shiftKey) rsize = true
     gebp(e, function(e, el) {
@@ -143,6 +143,7 @@ Dragger = (function() {
         element = element.parent()}catch(e){element = false; return}
       if(element[0].tagName.toLowerCase() == 'body') {element = false; return }
       dbel = getElementPath(element.attr(AH_ID)).element
+      updel = {}
       var isParentBody = false
       if(['body','html'].indexOf(el.parent()[0].tagName.toLowerCase()) != -1)
         isParentBody = true
@@ -158,13 +159,16 @@ Dragger = (function() {
         y: (isParentBody ? element.offset().top : (getNumber(element.css('top')) || 0)),
         h: element.height(),
         w: element.width()}
-      update(e)
-      Session.set('element', element.attr(AH_ID) || element.parent().attr(AH_ID))
+      var elid = element.attr(AH_ID) || element.parent().attr(AH_ID)
+      if(Session.equals('element', elid)) return
+      setTimeout(function() {
+        Session.set('element', elid)
+      })
     });
   }
   //Called after the user releases the mouse button from dragging an element.
   function stop(e) {
-    if(!element) return
+    if(!element || Session.equals('dragging',false)) return init()
     if(rsize) {
       callStopCallbacks(dbel, lastParentId, newParentId)
       init()
@@ -189,6 +193,7 @@ Dragger = (function() {
   function update(e) {
     if(!element) return
     clear()
+    Session.set('dragging', true)
     diff = {x: e.pageX - pos.x, y: e.pageY - pos.y}
     var check = function(what) { return dbel.style.hasOwnProperty(what) &&
       dbel.style[what].indexOf('%') < 0 &&
@@ -197,14 +202,14 @@ Dragger = (function() {
 
     if(rsize) {
       if (check('width'))
-        element.css('width', dbel.style.width = ((opos.w + diff.x) || 0) + 'px')
+        element.css('width', updel.width = ((opos.w + diff.x) || 0) + 'px')
       if (check('height'))
-        element.css('height', dbel.style.height = ((opos.h + diff.y) || 0) + 'px')
+        element.css('height', updel.height = ((opos.h + diff.y) || 0) + 'px')
     } else {
       if (check('left'))
-        element.css('left', dbel.style.left = ((opos.x + diff.x) || 0) + 'px')
+        element.css('left', updel.left = ((opos.x + diff.x) || 0) + 'px')
       if (check('top'))
-        element.css('top', dbel.style.top = ((opos.y + diff.y) || 0) + 'px')
+        element.css('top', updel.top = ((opos.y + diff.y) || 0) + 'px')
     }
   }
   /* End Private Functions */

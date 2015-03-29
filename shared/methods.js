@@ -82,7 +82,6 @@ Meteor.methods({
   },
   //Update element
   updateElement: function() {
-    if(Meteor.isServer) console.log('updating element')
     if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
     Hatchery.updateElement.apply(Hatchery, arguments)
   },

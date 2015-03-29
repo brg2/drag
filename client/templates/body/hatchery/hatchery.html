@@ -3,7 +3,7 @@
 		{{#each children}}
 			{{#if templates}}
 
-				{{#each templates}}
+				{{#each templates ..}}
 					{{> UI.dynamic template=_id}}
 				{{/each}}
 

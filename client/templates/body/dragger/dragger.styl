@@ -2,6 +2,7 @@ editor-width = 35%
 editor-min = 270px
 editor-max = 500px
 editor-margin = 20px
+trans-time = 0.2s
 
 transition()
 	-webkit-transition arguments
@@ -13,18 +14,30 @@ transition()
 .sp-container
 	z-index 2147483647 !important
 
+#apphatch.dragging > div
+	display none
+
 #editor
 	top 0px
 	width editor-width
-	height 0px
-	overflow visible
+	height 100%
+	overflow auto
+	max-width editor-max
+	transition all trans-time
 
 
-#editor.left
-	left editor-margin
+#apphatch.left #editor
+	direction: rtl
+	padding-left editor-margin
+	left 0px
+
+#apphatch.left #editor *
+	direction: ltr
 	
-#editor.right
-	right editor-margin
+#apphatch.right #editor
+	direction: ltr
+	padding-right editor-margin
+	right 0px
 
 #overlay, #editor
 	position fixed
@@ -51,10 +64,12 @@ transition()
 	float left
 
 
-#editor.right > div.value
+#apphatch.right #editor > div.value
 	text-align right 
 
-#editor.right > div, #editor.right > pre
+
+#apphatch.right #editor > div
+#apphatch.right #editor > pre
 	float right
 
 
@@ -121,10 +136,10 @@ a.login-link-text
 	position fixed
 	top 20px
 
-div.left #login-buttons
+#apphatch.left #login-buttons
 	right editor-margin
 
-div.right #login-buttons
+#apphatch.right #login-buttons
 	left editor-margin
 
 a.login-link-text

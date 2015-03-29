@@ -1,10 +1,10 @@
 <template name='dragger'>
-	<div id='apphatch'>
+	<div id='apphatch' class="{{position}} {{dragging}}">
 		<div id='overlay'>
 		</div>
 
 		{{#if isInRole 'admin,edit-app'}}
-		<div id="editor" class="{{position}}">
+		<div id="editor">
 		{{#with element}}
 			<div class="header mode">{{mode}}</div>
 			{{> UI.dynamic template=modeTemplate}}
@@ -14,8 +14,6 @@
 		{{> chapp_form}}
 		{{/if}}
 		
-		<div class="{{position}}">
 		{{> loginButtons}}
-		</div>
 	</div>
 </template>

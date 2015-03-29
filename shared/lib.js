@@ -28,11 +28,37 @@ compileTemplate = function(strTemplate) {
   return false
 }
 
+//Method used to get a caret position inside a contenteditable div
+getCaretPosition = function(element) {
+    var caretOffset = 0;
+    var doc = element.ownerDocument || element.document;
+    var win = doc.defaultView || doc.parentWindow;
+    var sel;
+    if (typeof win.getSelection != "undefined") {
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {
+            var range = win.getSelection().getRangeAt(0);
+            var preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(element);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            caretOffset = preCaretRange.toString().length;
+        }
+    } else if ( (sel = doc.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
 var AH_cssColorsRegex = /aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen|#[\da-zA-Z]+|rgba?\(.*?\)|hsla?\(.*?\)|hsva?\(.*?\)/gi
 getColorsFromString = function(strValue) {
   return strValue.match(AH_cssColorsRegex)
 }
 
+//Convert a string into an html block with links that open a color picker
 getColorLinkString = function(strValue) {
   var colorVal = strValue, curColors = getColorsFromString(colorVal);
   if(!curColors) return colorVal
@@ -42,6 +68,7 @@ getColorLinkString = function(strValue) {
   return colorVal
 }
 
+//Get an element path object containing the path of the element in the mongo db tree
 getElementPath = function(elementId, tree, rootId, strPath) {
   if(tree === undefined) tree = Elements.find().fetch()
   var found = false
@@ -60,6 +87,7 @@ getElementPath = function(elementId, tree, rootId, strPath) {
   return found
 }
 
+//Do the same as the elements but for a template
 getTemplatePath = function(elementId, templateId) {
   var el = getElementPath(elementId)
   if(!el || !el.element || !el.element.templates) return false

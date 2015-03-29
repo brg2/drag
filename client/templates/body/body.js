@@ -32,8 +32,24 @@ Template.body.rendered = function() {
 	  ,'alt+c': function(){ if(Session.get('visible') && confirm('Sure?')) 
       Meteor.call('clear'); Session.set('element',''); return false}
     //Delete element
-	  ,'shift+delete': function(){ 
+    ,'shift+delete': function(){ 
       if(Session.get('visible') && $(document.activeElement).attr('contenteditable') === undefined && confirm('Sure?'))
         Meteor.call('remove', Session.get('element')); Session.set('element', ''); return false}
+    //Move the element up
+    ,'↑': function() {
+      // alert('up')
+    }
+    //Move element down
+    ,'↓': function(){ 
+      // alert('down')
+    }
+    //Move element left
+    ,'←': function(){ 
+      // alert('left')
+    }
+    //Move element right
+    ,'→': function(){ 
+      // alert('right')
+    }
 	})
 }

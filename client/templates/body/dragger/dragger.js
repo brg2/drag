@@ -1,6 +1,6 @@
 Template.dragger.helpers({
   dragging: function() {
-    return Session.get('dragging')
+    return Session.equals('dragging', true) ? 'dragging' : '' 
   },
 
   element: function() {

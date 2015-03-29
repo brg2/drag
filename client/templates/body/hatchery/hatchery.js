@@ -4,10 +4,12 @@ Template.hatchery.helpers({
     return Elements.find()
   },
   // Setup the template from the template code stored in Mongo
-  templates: function() {
-    var that = this, objTmpls = {}
+  templates: function(parentContext) {    
+    var that = this, objTmpls = {}, tmpls
+    //Give parent context
+    if(parentContext) that.parent = parentContext
     //Get the templates collection
-    var tmpls = Templates.find( {_id: {$in: this.templates}} ).fetch()
+    tmpls = Templates.find( {_id: {$in: this.templates}} ).fetch()
     if(!tmpls.length) return this.templates
     //Cycle through the template list and convert to object
     _.each(tmpls, function(tmpl) {
@@ -16,6 +18,7 @@ Template.hatchery.helpers({
       //Make the association
       objTmpls[tmpl.name] = tmpl
     })
+    // console.log('tmpls', tmpls)
     //Render the html first
     if(!objTmpls.html || !objTmpls.html.rendered) return
     //If there is source code, then evaluate that here and save as a new or existing Meteor Template
@@ -35,8 +38,10 @@ Template.hatchery.helpers({
 })
 
 updateMongoElement = function(dbelement, lastParentId, newParentId) {
+  var curdbel = getElementPath(dbelement._id).element
+  _.extend(curdbel.style, dbelement.style)
   //Update element
-  Meteor.call('updateElement', dbelement._id, 'style', dbelement.style, lastParentId, newParentId, function(err) {
+  Meteor.call('updateElement', dbelement._id, 'style', curdbel.style, lastParentId, newParentId, function(err) {
     if(err) console.log(err)
   })
 }
