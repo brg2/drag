@@ -149,6 +149,7 @@ Template.dragger_mode_element_style.events({
       },
       hide: function(color) {
         $('[_id=' + Session.get('element') + ']').css(that.name, $(this).parent().text())
+        this.destroy()
       },
       move: function(color) {
         //Generate the new full string css value
