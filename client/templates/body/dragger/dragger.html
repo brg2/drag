@@ -3,7 +3,7 @@
 		<div id='overlay'>
 		</div>
 
-		{{#if isInRole 'admin,edit-app'}}
+		{{#if currentUser}}
 		<div id="editor">
 		{{#with element}}
 			<div class="header mode">{{mode}}</div>

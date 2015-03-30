@@ -133,7 +133,7 @@ Dragger = (function() {
   }
   //Called when the user begins to drag an element.
   function start(e) {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
+    if (!Meteor.user()) return false
     clear()
     pos = {x:e.pageX, y:e.pageY}
     if(e.shiftKey) rsize = true

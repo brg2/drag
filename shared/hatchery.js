@@ -3,7 +3,7 @@ Hatchery = (function() {
   /* Object */
   var mainobj = {
     export: function(strTemplateName) {
-      var els = Elements.find().fetch()
+      var els = Elements.find({u: Meteor.userId()}).fetch()
       var strTemplate = '\n<template name="' + (strTemplateName||'default') + '">'
       strTemplate += getElementsHTML(els)
       strTemplate += '\n</template>\n'
@@ -34,7 +34,7 @@ Hatchery = (function() {
     else strPath = 'children'
     options[strPath] = element
     //Update mongo
-    Elements.update({_id: parentPath.root}, {$push : options}, function(err){})
+    Elements.update({_id: parentPath.root, u: Meteor.userId()}, {$push : options}, function(err){})
   }
   function getElementsHTML(els, tabCount) {
     if(tabCount === undefined) tabCount = 1
@@ -60,10 +60,10 @@ Hatchery = (function() {
 
   function removeElementFromParent(element, parentId, cb) {
     //Find the path of the element
-    var tree = Elements.find().fetch(), options = {}, strPath, elementId = element._id, parentPath, strPath
+    var tree = Elements.find({u: Meteor.userId()}).fetch(), options = {}, strPath, elementId = element._id, parentPath, strPath
     if(!parentId) {
       //Or the root
-      Elements.remove({_id: elementId}, function(err){})
+      Elements.remove({_id: elementId, u: Meteor.userId()}, function(err){})
       return
     }
     //Get the old parent path
@@ -74,7 +74,7 @@ Hatchery = (function() {
     //Setup the options
     options[strPath] = {_id:elementId}
     //Update mongo
-    Elements.update({_id: parentPath.root}, {$pull : options}, function(err){})
+    Elements.update({_id: parentPath.root, u: Meteor.userId()}, {$pull : options}, function(err){})
   }
 
   function updateElement(elementId, strPath, obj, lastParentId, newParentId, cb) {
@@ -103,7 +103,7 @@ Hatchery = (function() {
       else options['$set'][elementPath.path + '.' + elementPath.index] = obj
     }
     //Update element if parents are equal
-    Elements.update({_id: elementPath.root}, options, function(err){})
+    Elements.update({_id: elementPath.root, u: Meteor.userId()}, options, function(err){})
   }
   /* End Private Functions */
 

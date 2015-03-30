@@ -1,7 +1,7 @@
 Meteor.methods({
   //Add a new element
   add: function() {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
+    if (!Meteor.user() || Meteor.isClient) return false
     //Variables
     var style, tmplHTML, tmplJS, htmlID, jsID, strHTML, strJS
     //Generate random style
@@ -32,14 +32,29 @@ Meteor.methods({
     //Generate a new HTML template
     htmlID = Fake.word() + Templates._makeNewID()
     strHTML = "{{#with element}}\n<div "+ AH_ID +"='{{_id}}'>\n\t<!-- Insert HTML code here -->\n\t" + Fake.word() + "\n\t<!-- Load children -->\n\t{{> hatchery}}\n</div>\n<style>\n\t/* CSS code here */\n\t["+ AH_ID +"={{_id}}] {\n\t\t{{getStyle}}\n\t}\n</style>\n{{/with}}\n"
-    tmplHTML = {_id: htmlID, name: 'html', rendered: compileTemplate(strHTML) }
+    tmplHTML = {
+      _id: htmlID, 
+      name: 'html', 
+      rendered: compileTemplate(strHTML),
+      u: Meteor.userId()
+    }
     Templates.insert(tmplHTML, function(err, tmplid){ cb(err, tmplHTML, strHTML) })
     //Generate a new Javascript template
     strJS = "Template['{{_id}}'].helpers({\n\t// helper code here\n})\n\nTemplate['{{_id}}'].events({\n\t// and event code here\n})\n"
-    tmplJS = {_id: jsID = Fake.word() + Templates._makeNewID(), name: 'javascript', rendered: compileTemplate(strJS) }
+    tmplJS = {
+      _id: jsID = Fake.word() + Templates._makeNewID(), 
+      name: 'javascript', 
+      rendered: compileTemplate(strJS),
+      u: Meteor.userId()
+    }
     Templates.insert(tmplJS, function(err, tmplid){ cb(err, tmplJS, strJS) })
     //Create new element and link the template 
-    Elements.insert({_id: Fake.word() + Elements._makeNewID(), style: style, templates: [htmlID, jsID]})
+    Elements.insert({
+      _id: Fake.word() + Elements._makeNewID(), 
+      style: style, 
+      templates: [htmlID, jsID],
+      u: Meteor.userId()
+    })
   },
   allowUserTo: function(strUsername, arrRoles) {
     if(! Meteor.isServer) return false
@@ -57,17 +72,17 @@ Meteor.methods({
   },
   //Clear tree
   clear: function() {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
+    if (!Meteor.user()) return false
     //Remove all the elements
-    Elements.remove({})
+    Elements.remove({u: Meteor.userId()})
     //Cycle through the templates
-    _.each(Templates.find().fetch(), function(template) {
+    _.each(Templates.find({u:Meteor.userId()}).fetch(), function(template) {
       if(! Meteor.isServer) return
       //Remove the associated document in ShareJS
       ShareJS.model.delete(template._id)
     })
     //Remove all the templates
-    Templates.remove({})
+    Templates.remove({u: Meteor.userId()})
   },
   //Get the element path object of an element id
   getElement: function(elementId) {
@@ -75,19 +90,19 @@ Meteor.methods({
   },
   //Remove the element
   remove: function(elementId) {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
+    if (!Meteor.user()) return false
     var elementPath = getElementPath(elementId)
     if(elementPath.element.templates) Templates.remove({_id: {$in: elementPath.element.templates}})
-    Elements.remove({_id:elementId})
+    Elements.remove({_id:elementId, u: Meteor.userId()})
   },
   //Update element
   updateElement: function() {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
+    if (!Meteor.user()) return false
     Hatchery.updateElement.apply(Hatchery, arguments)
   },
   //Update the name of the template
   updateTemplateName: function(templateId, strNewTemplateName) {
-    if (!Roles.userIsInRole(Meteor.user(), ['admin','edit-app'])) return false
-    Templates.update({ _id: templateId }, { $set: { name: strNewTemplateName }})
+    if (!Meteor.user()) return false
+    Templates.update({ _id: templateId, u: Meteor.userId() }, { $set: { name: strNewTemplateName }})
   }
 })

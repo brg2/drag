@@ -1,3 +1,5 @@
+FM_ADMIN_ID = false
+
 //When meteor is done loading...
 Meteor.startup(function() {
   // cycle through all the templates
@@ -15,5 +17,7 @@ Meteor.startup(function() {
   	});
 
   	Roles.addUsersToRoles(id, ['admin']);
+  } else {
+    FM_ADMIN_ID = Meteor.users.findOne({username: "admin"})._id
   }
 })
