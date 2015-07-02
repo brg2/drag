@@ -25,7 +25,7 @@ Template.body.rendered = function() {
 	  'ctrl+shift+e': function(){ if(Session.get('visible')) Session.set('position', 
       Session.get('position') == 'right' ? 'left' : 'right'); return false }
     //Open or close editor
-	  ,'ctrl+e': function(){ Session.set('visible', !Session.get('visible')); return false }
+	  ,'cmd+e': function(){ Session.set('visible', !Session.get('visible')); return false }
     //Add new element
 	  ,'alt+a': function(){ if(Session.get('visible'))  {Meteor.call('add'); return false} }
     //Clear all elements

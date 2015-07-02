@@ -8,6 +8,7 @@ Meteor.startup(function() {
     addTemplateListener(template)
   })
 
+  //Create users if they don't exist
   if (Meteor.users.find().fetch().length === 0) {
     console.log('Creating users...');
 
@@ -16,7 +17,11 @@ Meteor.startup(function() {
     	password: "password"
   	});
 
+    //Assign admin role
   	Roles.addUsersToRoles(id, ['admin']);
+
+    //Associate global admin id variable
+    FM_ADMIN_ID = id
   } else {
     FM_ADMIN_ID = Meteor.users.findOne({username: "admin"})._id
   }
